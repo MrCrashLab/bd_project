@@ -14,4 +14,10 @@ public class Wellcome {
     {
         return "Hello man";
     }
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String hello1()
+    {
+        return "Hello man2";
+    }
 }
