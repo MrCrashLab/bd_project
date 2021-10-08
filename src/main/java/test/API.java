@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import test.Models.Application;
-import test.Requests.Example;
+import test.Requests.FullApplicationClient;
 
 import java.util.List;
 
@@ -21,16 +21,9 @@ public class API {
     }
 
     @RequestMapping(value = "/application/{id}", method = RequestMethod.GET)
-    public List<Example> getApplication(@PathVariable("id") int id)
+    public List<FullApplicationClient> getApplication(@PathVariable("id") int id)
     {
         bankSystem.getFullApplicationClient(id);
         return bankSystem.getExamples();
-    }
-
-    @RequestMapping(value = "/application", method = RequestMethod.GET)
-    public Application getApplication_test()
-    {
-        bankSystem.app_test();
-        return bankSystem.application_test;
     }
 }

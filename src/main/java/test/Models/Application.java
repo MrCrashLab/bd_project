@@ -7,8 +7,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.sql.Date;
 
-@JsonRootName(value = "Example")
-@JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT ,use = JsonTypeInfo.Id.NAME)
+
 public class Application {
     private String ApplicationNum;
     private String Stage;
