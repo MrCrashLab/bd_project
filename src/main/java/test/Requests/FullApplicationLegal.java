@@ -1,15 +1,12 @@
 package test.Requests;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import test.Models.*;
 
-
-public class FullApplicationClient {
+public class FullApplicationLegal {
     private Application application;
     private ApplicationAggr applicationAggr;
     private ApplicationList applicationList;
-    private Client client;
+    private LegalEntity legalEntity;
     private Credit credit;
     private Declined declined;
     private Employess employess;
@@ -18,11 +15,11 @@ public class FullApplicationClient {
     private ProductDeclined productDeclined;
     private ProductParameters productParameters;
 
-    public FullApplicationClient(Application application, ApplicationAggr applicationAggr, ApplicationList applicationList, Client client, Credit credit, Declined declined, Employess employess, Income income, Loan loan, ProductDeclined productDeclined, ProductParameters productParameters) {
+    public FullApplicationLegal(Application application, ApplicationAggr applicationAggr, ApplicationList applicationList, LegalEntity legalEntity, Credit credit, Declined declined, Employess employess, Income income, Loan loan, ProductDeclined productDeclined, ProductParameters productParameters) {
         this.application = application;
         this.applicationAggr = applicationAggr;
         this.applicationList = applicationList;
-        this.client = client;
+        this.legalEntity = legalEntity;
         this.credit = credit;
         this.declined = declined;
         this.employess = employess;
@@ -56,12 +53,12 @@ public class FullApplicationClient {
         this.applicationList = applicationList;
     }
 
-    public Client getClient() {
-        return client;
+    public LegalEntity getLegalEntity() {
+        return legalEntity;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
+    public void setLegalEntity(LegalEntity legalEntity) {
+        this.legalEntity = legalEntity;
     }
 
     public Credit getCredit() {
