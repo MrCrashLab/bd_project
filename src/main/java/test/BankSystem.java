@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import test.Requests.FullApplicationClient;
 import test.Requests.FullApplicationLegal;
+import test.Requests.Login;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -15,8 +16,7 @@ import java.util.List;
 public class BankSystem {
     private List<FullApplicationClient> fullApplicationClients = new ArrayList<FullApplicationClient>();
     private List<FullApplicationLegal> fullApplicationLegals = new ArrayList<FullApplicationLegal>();
-    private String LOGIN;
-
+    private Login login;
     public BankSystem() {
     }
 
@@ -28,8 +28,8 @@ public class BankSystem {
         return fullApplicationLegals;
     }
 
-    public String getLOGIN() {
-        return LOGIN;
+    public Login getLogin() {
+        return login;
     }
 
     @Value("${jdbc_url}")
@@ -222,13 +222,7 @@ public class BankSystem {
             preparedStatement.setString(2, pass);
             ResultSet result = preparedStatement.executeQuery();
             while (result.next()) {
-                if (result.getString("result").equals("true"))
-                {
-                    LOGIN = "true";
-                }
-                else {
-                    LOGIN = "false";
-                }
+                login = new Login(result.getString("result"));
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

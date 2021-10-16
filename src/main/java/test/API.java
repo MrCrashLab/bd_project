@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import test.Models.Application;
 import test.Requests.FullApplicationClient;
 import test.Requests.FullApplicationLegal;
+import test.Requests.Login;
 
 import java.util.List;
 
@@ -36,9 +37,9 @@ public class API {
     }
 
     @RequestMapping(value = "/application/client/enter/{name}/{pass}")
-    public String getLoginClient(@PathVariable("name") String name, @PathVariable("pass") String pass)
+    public Login getLoginClient(@PathVariable("name") String name, @PathVariable("pass") String pass)
     {
         bankSystem.loginClient(name, pass);
-        return bankSystem.getLOGIN();
+        return bankSystem.getLogin();
     }
 }
