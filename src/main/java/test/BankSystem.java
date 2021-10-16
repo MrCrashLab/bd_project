@@ -15,7 +15,7 @@ import java.util.List;
 public class BankSystem {
     private List<FullApplicationClient> fullApplicationClients = new ArrayList<FullApplicationClient>();
     private List<FullApplicationLegal> fullApplicationLegals = new ArrayList<FullApplicationLegal>();
-    private Boolean LOGIN;
+    private String LOGIN;
 
     public BankSystem() {
     }
@@ -28,7 +28,7 @@ public class BankSystem {
         return fullApplicationLegals;
     }
 
-    public Boolean getLOGIN() {
+    public String getLOGIN() {
         return LOGIN;
     }
 
@@ -224,10 +224,10 @@ public class BankSystem {
             while (result.next()) {
                 if (result.getString("result").equals("true"))
                 {
-                    LOGIN = true;
+                    LOGIN = "true";
                 }
                 else {
-                    LOGIN = false;
+                    LOGIN = "false";
                 }
             }
         } catch (ClassNotFoundException e) {
