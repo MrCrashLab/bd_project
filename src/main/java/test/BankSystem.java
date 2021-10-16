@@ -15,6 +15,7 @@ import java.util.List;
 public class BankSystem {
     private List<FullApplicationClient> fullApplicationClients = new ArrayList<FullApplicationClient>();
     private List<FullApplicationLegal> fullApplicationLegals = new ArrayList<FullApplicationLegal>();
+    private Boolean LOGIN;
 
     public BankSystem() {
     }
@@ -25,6 +26,10 @@ public class BankSystem {
 
     public List<FullApplicationLegal> getFullApplicationLegals() {
         return fullApplicationLegals;
+    }
+
+    public Boolean getLOGIN() {
+        return LOGIN;
     }
 
     @Value("${jdbc_url}")
@@ -201,6 +206,34 @@ public class BankSystem {
             }
 
         } catch (ClassNotFoundException | SQLException e) {
+        }
+    }
+
+    public void loginClient(String name, String pass)
+    {
+        try {
+            Class.forName("org.postgresql.Driver");
+            Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
+            PreparedStatement preparedStatement = connection.prepareStatement("select case\n" +
+                    "when (select COUNT(*) from \"Client\" where \"Name\"=? and \"Passportnum\"=?) > 0 then 'true'\n" +
+                    "else 'false'\n" +
+                    "end result;");
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, pass);
+            ResultSet result = preparedStatement.executeQuery();
+            while (result.next()) {
+                if (result.getString("result").equals("true"))
+                {
+                    LOGIN = true;
+                }
+                else {
+                    LOGIN = false;
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
     }
 

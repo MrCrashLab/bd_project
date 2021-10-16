@@ -34,4 +34,11 @@ public class API {
         bankSystem.getFullApplicationLegal(id);
         return bankSystem.getFullApplicationLegals();
     }
+
+    @RequestMapping(value = "/application/client/enter/{name}/{pass}")
+    public Boolean getLoginClient(@PathVariable("name") String name, @PathVariable("pass") String pass)
+    {
+        bankSystem.loginClient(name, pass);
+        return bankSystem.getLOGIN();
+    }
 }
