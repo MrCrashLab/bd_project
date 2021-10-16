@@ -44,7 +44,7 @@ public class BankSystem {
     @JsonIgnore
     private String psgr_pw;
 
-    public void getFullApplicationClient(String name, String surname) {
+    public void getFullApplicationClient(String name, String pass) {
         fullApplicationClients.clear();
         try {
             Class.forName("org.postgresql.Driver");
@@ -97,9 +97,9 @@ public class BankSystem {
                     "inner join \"ApplicationList\" ON \"ApplicationList\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
                     "inner join \"ApplicationAggr\" ON \"ApplicationAggr\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
                     "inner join \"Declined\" ON \"Declined\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
-                    "inner join \"ProductDeclined\" on \"ProductDeclined\".\"PARENTID\"=\"Declined\".\"ID\" where \"Client\".\"Name\"=? and \"Client\".\"Surname\"=?;");
+                    "inner join \"ProductDeclined\" on \"ProductDeclined\".\"PARENTID\"=\"Declined\".\"ID\" where \"Client\".\"Name\"=? and \"Client\".\"Passportnum\"=?;");
             preparedStatement.setString(1, name);
-            preparedStatement.setString(2, surname);
+            preparedStatement.setString(2, pass);
             ResultSet result = preparedStatement.executeQuery();
             while (result.next()) {
                 ApplicationAggr applicationAggr = new ApplicationAggr(result.getString("TypeApAg"),

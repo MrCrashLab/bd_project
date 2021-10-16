@@ -21,10 +21,10 @@ public class API {
         this.bankSystem = bankSystem;
     }
 
-    @RequestMapping(value = "/application/client/{name}/{surname}", method = RequestMethod.GET)
-    public List<FullApplicationClient> getApplicationsClient(@PathVariable("name") String name, @PathVariable("surname") String surname)
+    @RequestMapping(value = "/application/client/{name}/{pass}", method = RequestMethod.GET)
+    public List<FullApplicationClient> getApplicationsClient(@PathVariable("name") String name, @PathVariable("pass") String pass)
     {
-        bankSystem.getFullApplicationClient(name, surname);
+        bankSystem.getFullApplicationClient(name, pass);
         return bankSystem.getFullApplicationClients();
     }
 
