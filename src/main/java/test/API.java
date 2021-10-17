@@ -1,10 +1,7 @@
 package test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import test.Models.Application;
 import test.Requests.FullApplicationClient;
 import test.Requests.FullApplicationLegal;
@@ -36,10 +33,16 @@ public class API {
         return bankSystem.getFullApplicationLegals();
     }
 
-    @RequestMapping(value = "/application/client/enter/{name}/{pass}")
+    @RequestMapping(value = "/application/client/enter/{name}/{pass}", method = RequestMethod.GET)
     public Login getLoginClient(@PathVariable("name") String name, @PathVariable("pass") String pass)
     {
         bankSystem.loginClient(name, pass);
         return bankSystem.getLogin();
+    }
+
+    @RequestMapping(value = "/application/client/post", method = RequestMethod.POST)
+    public void postClientApplication(@RequestBody() FullApplicationClient fullApplicationClient)
+    {
+        bankSystem.postApplication(fullApplicationClient);
     }
 }

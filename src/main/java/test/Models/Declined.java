@@ -9,6 +9,9 @@ public class Declined {
         LastDate = lastDate;
     }
 
+    public Declined() {
+    }
+
     public Date getLastDate() {
         return LastDate;
     }

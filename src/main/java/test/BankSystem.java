@@ -232,6 +232,162 @@ public class BankSystem {
     }
 
 
+    public void postApplication(FullApplicationClient fullApplicationClient)
+    {
+        try {
+            Class.forName("org.postgresql.Driver");
+            Connection c = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
+            PreparedStatement st = c.prepareStatement("INSERT INTO \"Application\"\n" +
+                    "(\"ApplicationNum\", \"Stage\", \"Source\", \"Region\", \"Branch\", \"DateCreation\", \"Priority\")\n" +
+                    "VALUES(?, ?, ?, ?, ?, ?, ?);");
+            st.setString(1, fullApplicationClient.getApplication().getApplicationNum());
+            st.setString(2, fullApplicationClient.getApplication().getStage());
+            st.setString(3, fullApplicationClient.getApplication().getSource());
+            st.setString(4, fullApplicationClient.getApplication().getRegion());
+            st.setString(5, fullApplicationClient.getApplication().getBranch());
+            st.setDate(6, fullApplicationClient.getApplication().getDateCreation());
+            st.setString(7, fullApplicationClient.getApplication().getPriority());
+            st.execute();
+            st = c.prepareStatement("insert into \"Terms\" DEFAULT VALUES;");
+            st.execute();
+            st = c.prepareStatement("INSERT INTO \"ProductParameters\"\n" +
+                    "(\"ProductCategory\", \"ProductName\", \"Purpose\", \"DisbursementDate\"," +
+                    "\"RepaymentScheme\", \"FirstPaymentDate\", \"RepaymentDate\"," +
+                    "\"DownPaymentSource\", \"DelayPeriod\", \"RefSum\")\n" +
+                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+            st.setString(1, fullApplicationClient.getProductParameters().getProductCategory());
+            st.setString(2, fullApplicationClient.getProductParameters().getProductName());
+            st.setString(3, fullApplicationClient.getProductParameters().getPurpose());
+            st.setDate(4, fullApplicationClient.getProductParameters().getDisbursementDate());
+            st.setString(5, fullApplicationClient.getProductParameters().getRepaymentScheme());
+            st.setDate(6, fullApplicationClient.getProductParameters().getFirstPaymentDate());
+            st.setDate(7, fullApplicationClient.getProductParameters().getRepaymentDate());
+            st.setString(8, fullApplicationClient.getProductParameters().getDownPaymentSource());
+            st.setInt(9, fullApplicationClient.getProductParameters().getDelayPeriod());
+            st.setInt(10, fullApplicationClient.getProductParameters().getRefSum());
+            st.execute();
+            st = c.prepareStatement("INSERT INTO \"Loan\"\n" +
+                    "(\"Type\", \"Status\", \"Annuity\", \"InitialAmount\", \"Outstanding\", \"PaidInterest\", \"PledgeValue\", \"DateFunded\", \"DateRealClose\")\n" +
+                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);");
+            st.setString(1, fullApplicationClient.getLoan().getType());
+            st.setString(2, fullApplicationClient.getLoan().getStatus());
+            st.setInt(3, fullApplicationClient.getLoan().getAnnuity());
+            st.setInt(4, fullApplicationClient.getLoan().getInitialAmount());
+            st.setInt(5, fullApplicationClient.getLoan().getOutstanding());
+            st.setInt(6, fullApplicationClient.getLoan().getPaidInterest());
+            st.setInt(7, fullApplicationClient.getLoan().getPledgeValue());
+            st.setDate(8, fullApplicationClient.getLoan().getDateFunded());
+            st.setDate(9, fullApplicationClient.getLoan().getDateRealClose());
+            st.execute();
+            st = c.prepareStatement("insert into \"Participant\" DEFAULT VALUES;");
+            st.execute();
+            st = c.prepareStatement("insert into \"Finances\" DEFAULT VALUES;");
+            st.execute();
+            st = c.prepareStatement("INSERT INTO \"Income\"\n" +
+                    "(\"Type\", \"Main\", \"Confirmation\", \"Periodicity\", \"PaymentManner\", \"Currency\", \"Value\", \"Average\")\n" +
+                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?);");
+            st.setString(1, fullApplicationClient.getIncome().getType());
+            st.setString(2, fullApplicationClient.getIncome().getMain());
+            st.setString(3, fullApplicationClient.getIncome().getConfirmation());
+            st.setString(4, fullApplicationClient.getIncome().getPeriodicity());
+            st.setString(5, fullApplicationClient.getIncome().getPaymentManner());
+            st.setString(6, fullApplicationClient.getIncome().getCurrency());
+            st.setString(7, fullApplicationClient.getIncome().getValue());
+            st.setString(8, fullApplicationClient.getIncome().getAverage());
+            st.execute();
+            st = c.prepareStatement("INSERT INTO \"Credit\"\n" +
+                    "(\"Index\", \"Type\", \"PrimaryKey\", \"ContractRef\", \"Currency\", \"IssueDate\", \"Annuity\", \"Product\", \"Comment\")\n" +
+                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);");
+            st.setString(1, fullApplicationClient.getCredit().getIndex());
+            st.setString(2, fullApplicationClient.getCredit().getType());
+            st.setString(3, fullApplicationClient.getCredit().getPrimaryKey());
+            st.setString(4, fullApplicationClient.getCredit().getContractRef());
+            st.setString(5, fullApplicationClient.getCredit().getCurrency());
+            st.setDate(6, fullApplicationClient.getCredit().getIssueDate());
+            st.setString(7, fullApplicationClient.getCredit().getAnnuity());
+            st.setString(8, fullApplicationClient.getCredit().getProduct());
+            st.setString(9, fullApplicationClient.getCredit().getComment());
+            st.execute();
+            st = c.prepareStatement("INSERT INTO \"Employees\"\n" +
+                    "(\"NAME\", \"SURNAME\", \"RANG\")\n" +
+                    "VALUES(?, ?, ?);");
+            st.setString(1, fullApplicationClient.getEmployess().getNAME());
+            st.setString(2, fullApplicationClient.getEmployess().getSURNAME());
+            st.setString(3, fullApplicationClient.getEmployess().getRANG());
+            st.execute();
+            st = c.prepareStatement("INSERT INTO \"Client\"\n" +
+                    "(\"PARENTID\", \"BirthDate\", \"BirthPlace\", \"Age\", \"Gender\", \"Citizenship\", \"Education\", \"Surname\", \"Name\"," +
+                    "\"Patronymic\", \"DocumentType\", \"Passportnum\", \"Issuedate\"," +
+                    "\"IssuePlace\", \"IssueAuthority\", \"Departmentcode\", \"SNILS\")\n" +
+                    "VALUES((select max(\"ID\") from \"Participant\"), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+            st.setDate(1, fullApplicationClient.getClient().getBirthDate());
+            st.setString(2, fullApplicationClient.getClient().getBirthPlace());
+            st.setInt(3, fullApplicationClient.getClient().getAge());
+            st.setString(4, fullApplicationClient.getClient().getGender());
+            st.setString(5, fullApplicationClient.getClient().getCitizenship());
+            st.setString(6, fullApplicationClient.getClient().getEducation());
+            st.setString(7, fullApplicationClient.getClient().getSurname());
+            st.setString(8, fullApplicationClient.getClient().getName());
+            st.setString(9, fullApplicationClient.getClient().getPatronymic());
+            st.setString(10, fullApplicationClient.getClient().getDocumentType());
+            st.setString(11, fullApplicationClient.getClient().getPassportnum());
+            st.setDate(12, fullApplicationClient.getClient().getIssuedate());
+            st.setString(13, fullApplicationClient.getClient().getIssuePlace());
+            st.setString(14, fullApplicationClient.getClient().getIssueAuthority());
+            st.setString(15, fullApplicationClient.getClient().getDepartmentcode());
+            st.setString(16, fullApplicationClient.getClient().getSNILS());
+            st.execute();
+            st = c.prepareStatement("insert into \"HistoryApplicationList\" DEFAULT VALUES;");
+            st.execute();
+            st = c.prepareStatement("INSERT INTO \"ApplicationList\"\n" +
+                    "(\"PrimaryKey\", \"StageID\", \"ProductCategory\", \"ProductID\", \"ProductName\"," +
+                    "\"MarketingSegment\", \"ParticipationType\", \"Limit\", \"Payment\"," +
+                    "\"DateCreation\", \"DateApproved\", \"Status\", \"OpenDate\", \"FinishDate\")\n" +
+                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+            st.setString(1, fullApplicationClient.getApplicationList().getPrimaryKey());
+            st.setString(2, fullApplicationClient.getApplicationList().getStageID());
+            st.setString(3, fullApplicationClient.getApplicationList().getProductCategory());
+            st.setString(4, fullApplicationClient.getApplicationList().getProductID());
+            st.setString(5, fullApplicationClient.getApplicationList().getProductName());
+            st.setString(6, fullApplicationClient.getApplicationList().getMarketingSegment());
+            st.setString(7, fullApplicationClient.getApplicationList().getParticipationType());
+            st.setInt(8, fullApplicationClient.getApplicationList().getLimit());
+            st.setInt(9, fullApplicationClient.getApplicationList().getPayment());
+            st.setDate(10, fullApplicationClient.getApplicationList().getDateCreation());
+            st.setDate(11, fullApplicationClient.getApplicationList().getDateApproved());
+            st.setString(12, fullApplicationClient.getApplicationList().getStatus());
+            st.setDate(13, fullApplicationClient.getApplicationList().getOpenDate());
+            st.setDate(14, fullApplicationClient.getApplicationList().getFinishDate());
+            st.execute();
+            st = c.prepareStatement("INSERT INTO \"ApplicationAggr\"\n" +
+                    "(\"Type\", \"Number\", \"TotalLimit\", \"TotalPayment\", \"LimitProductCategory\", \"LimitProductName\", \"LastDateCreated\", \"LastDateFunded\")\n" +
+                    "VALUES(?, ?, ?, ?, ?, ?, ?, ?);");
+            st.setString(1, fullApplicationClient.getApplicationAggr().getType());
+            st.setInt(2, fullApplicationClient.getApplicationAggr().getNumber());
+            st.setInt(3, fullApplicationClient.getApplicationAggr().getTotalLimit());
+            st.setInt(4, fullApplicationClient.getApplicationAggr().getTotalPayment());
+            st.setInt(5, fullApplicationClient.getApplicationAggr().getLimitProductCategory());
+            st.setInt(6, fullApplicationClient.getApplicationAggr().getLimitProductName());
+            st.setDate(7, fullApplicationClient.getApplicationAggr().getLastDateCreated());
+            st.setDate(8, fullApplicationClient.getApplicationAggr().getLastDateFunded());
+            st.execute();
+            st = c.prepareStatement("INSERT INTO \"Declined\"\n" +
+                    "(\"LastDate\")\n" +
+                    "VALUES(?);");
+            st.setDate(1, fullApplicationClient.getDeclined().getLastDate());
+            st.execute();
+            st = c.prepareStatement("INSERT INTO public.\"ProductDeclined\"\n" +
+                    "(\"Type\", \"Number\")\n" +
+                    "VALUES(?, ?);");
+            st.setString(1, fullApplicationClient.getProductDeclined().getType());
+            st.setInt(2, fullApplicationClient.getProductDeclined().getNumber());
+            st.execute();
+        } catch (ClassNotFoundException e) {
+        } catch (SQLException e) {
+        }
+    }
+
+
     public void getFullApplicationLegal(int ID) {
         fullApplicationLegals.clear();
         try {
