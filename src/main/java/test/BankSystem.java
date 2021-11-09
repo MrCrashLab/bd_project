@@ -387,6 +387,68 @@ public class BankSystem {
         }
     }
 
+    public void updateApplicationClient(int id, String str, int column, String table)
+    {
+        try {
+            Class.forName("org.postgresql.Driver");
+            Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
+            PreparedStatement preparedStatement;
+            switch (table) {
+                case "Application":
+                    preparedStatement = connection.prepareStatement("");
+                    break;
+                case "ApplicationAggr":
+
+                    break;
+                case "ApplicationList":
+
+                    break;
+                case "Client":
+
+                    break;
+                case "Loan":
+
+                    break;
+                case "ProductParameters":
+
+                    break;
+                case "LegalEntity":
+
+                    break;
+                case "Income":
+
+                    break;
+                case "Credit":
+
+                    break;
+                case "Employees":
+
+                    break;
+                case "Declined":
+
+                    break;
+                case "ProductDeclined":
+
+                    break;
+
+            }
+//            PreparedStatement preparedStatement = connection.prepareStatement("select case\n" +
+//                    "when (select COUNT(*) from \"Client\" where \"Name\"=? and \"Passportnum\"=?) > 0 then 'true'\n" +
+//                    "else 'false'\n" +
+//                    "end result;");
+//            preparedStatement.setString(1, name);
+//            preparedStatement.setString(2, pass);
+            //ResultSet result = preparedStatement.executeQuery();
+//            while (result.next()) {
+//                login = new Login(result.getString("result"));
+//            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
 
     public void getFullApplicationLegal(int ID) {
         fullApplicationLegals.clear();
