@@ -60,7 +60,7 @@ public class BankSystem {
         try {
             Class.forName("org.postgresql.Driver");
             Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT \"Application\".\"ApplicationNum\", \"Application\".\"Stage\"," +
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT \"Application\".\"ID\",\"Application\".\"ApplicationNum\", \"Application\".\"Stage\"," +
                     "\"Application\".\"Source\", \"Application\".\"Region\",\n" +
                     "\"Application\".\"Branch\", \"Application\".\"DateCreation\", \"Application\".\"Priority\",\n" +
                     "\"ApplicationAggr\".\"Type\" as \"TypeApAg\", \"ApplicationAggr\".\"Number\" as \"NumberApAg\", \n" +
@@ -137,7 +137,8 @@ public class BankSystem {
                         result.getDate("OpenDate"),
                         result.getDate("FinishDate")
                 );
-                Application application = new Application(result.getString("ApplicationNum"),
+                Application application = new Application(result.getInt("ID"),
+                        result.getString("ApplicationNum"),
                         result.getString("Stage"),
                         result.getString("Source"),
                         result.getString("Region"),
@@ -405,7 +406,7 @@ public class BankSystem {
             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE \"" + table + "\" SET \"" + column + "\" =? WHERE \"ID\"=?;");
             preparedStatement.setString(1, str);
             preparedStatement.setInt(2, id);
-            System.out.println(preparedStatement.toString());
+            //System.out.println(preparedStatement.toString());
             preparedStatement.execute();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -522,7 +523,7 @@ public class BankSystem {
         try {
             Class.forName("org.postgresql.Driver");
             Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT \"Application\".\"ApplicationNum\", \"Application\".\"Stage\", \"Application\".\"Source\", \"Application\".\"Region\",\n" +
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT \"Application\".\"ID\", \"Application\".\"ApplicationNum\", \"Application\".\"Stage\", \"Application\".\"Source\", \"Application\".\"Region\",\n" +
                     "\"Application\".\"Branch\", \"Application\".\"DateCreation\", \"Application\".\"Priority\",\n" +
                     "\"ApplicationAggr\".\"Type\" as \"TypeApAg\", \"ApplicationAggr\".\"Number\" as \"NumberApAg\", \n" +
                     "\"ApplicationAggr\".\"TotalLimit\", \"ApplicationAggr\".\"TotalPayment\", \"ApplicationAggr\".\"LimitProductCategory\",\n" +
@@ -597,7 +598,8 @@ public class BankSystem {
                         result.getDate("OpenDate"),
                         result.getDate("FinishDate")
                 );
-                Application application = new Application(result.getString("ApplicationNum"),
+                Application application = new Application(result.getInt("ID"),
+                        result.getString("ApplicationNum"),
                         result.getString("Stage"),
                         result.getString("Source"),
                         result.getString("Region"),
@@ -680,7 +682,8 @@ public class BankSystem {
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM \"Application\" WHERE \"Stage\"='PROGRESS'");
             ResultSet result = preparedStatement.executeQuery();
             while (result.next()) {
-                Application application = new Application(result.getString("ApplicationNum"),
+                Application application = new Application(result.getInt("ID"),
+                        result.getString("ApplicationNum"),
                         result.getString("Stage"),
                         result.getString("Source"),
                         result.getString("Region"),
@@ -702,7 +705,8 @@ public class BankSystem {
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM \"Application\" WHERE \"Stage\"='FAILED'");
             ResultSet result = preparedStatement.executeQuery();
             while (result.next()) {
-                Application application = new Application(result.getString("ApplicationNum"),
+                Application application = new Application(result.getInt("ID"),
+                        result.getString("ApplicationNum"),
                         result.getString("Stage"),
                         result.getString("Source"),
                         result.getString("Region"),

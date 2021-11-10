@@ -9,6 +9,7 @@ import java.sql.Date;
 
 
 public class Application {
+    private int id;
     private String ApplicationNum;
     private String Stage;
     private String Source;
@@ -17,7 +18,8 @@ public class Application {
     private Date DateCreation;
     private String Priority;
 
-    public Application(String applicationNum, String stage, String source, String region, String branch, Date dateCreation, String priority) {
+    public Application(int id, String applicationNum, String stage, String source, String region, String branch, Date dateCreation, String priority) {
+        this.id = id;
         ApplicationNum = applicationNum;
         Stage = stage;
         Source = source;
@@ -25,6 +27,14 @@ public class Application {
         Branch = branch;
         DateCreation = dateCreation;
         Priority = priority;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getApplicationNum() {
