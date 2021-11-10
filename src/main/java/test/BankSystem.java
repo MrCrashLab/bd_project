@@ -1,5 +1,6 @@
 package test;
 
+import org.postgresql.util.PSQLException;
 import test.Models.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +17,18 @@ import java.util.List;
 public class BankSystem {
     private List<FullApplicationClient> fullApplicationClients = new ArrayList<FullApplicationClient>();
     private List<FullApplicationLegal> fullApplicationLegals = new ArrayList<FullApplicationLegal>();
+    private List<Application> allApplications = new ArrayList<>();
+    private List<Client> clientsList = new ArrayList<>();
     private Login login;
     public BankSystem() {
+    }
+
+    public List<Application> getAllApplications() {
+        return allApplications;
+    }
+
+    public List<Client> getClientsList() {
+        return clientsList;
     }
 
     public List<FullApplicationClient> getFullApplicationClients() {
@@ -387,61 +398,56 @@ public class BankSystem {
         }
     }
 
-    public void updateApplicationClient(int id, String str, int column, String table)
+    public void updateApplicationClient(int id, String str, String column, String table) throws SQLException, ClassNotFoundException {
+        try {
+            Class.forName("org.postgresql.Driver");
+            Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE \"" + table + "\" SET \"" + column + "\" =? WHERE \"ID\"=?;");
+            preparedStatement.setString(1, str);
+            preparedStatement.setInt(2, id);
+            System.out.println(preparedStatement.toString());
+            preparedStatement.execute();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }  catch (PSQLException e)
+        {
+            Class.forName("org.postgresql.Driver");
+            Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE \"" + table + "\" SET \"" + column + "\" =" + str + " WHERE \"ID\"=?;");
+            preparedStatement.setInt(1, id);
+            System.out.println(preparedStatement.toString());
+            preparedStatement.execute();
+        }
+    }
+
+    public void deleteApplicationClient(int id)
     {
         try {
             Class.forName("org.postgresql.Driver");
             Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
-            PreparedStatement preparedStatement;
-            switch (table) {
-                case "Application":
-                    preparedStatement = connection.prepareStatement("");
-                    break;
-                case "ApplicationAggr":
+            PreparedStatement preparedStatement = connection.prepareStatement("select \"Loan\".\"ID\" as LID, \"ProductParameters\".\"ID\" as PROID, \"Terms\".\"ID\" as TID,\n" +
+                    "\t\"Application\".\"ID\" as AID, \"ApplicationAggr\".\"ID\" as APID, \"ApplicationList\".\"ID\" as APLID,\n" +
+                    "\t\"Client\".\"ID\" as CID, \"Credit\".\"ID\" as CRID, \"Declined\".\"ID\" as DECID, \"Employees\".\"ID\" as EMID,\n" +
+                    "\t\"Finances\".\"ID\" as FIID, \"HistoryApplicationList\".\"ID\" as HIID, \"Income\".\"ID\" as INID, \n" +
+                    "\t\"ProductDeclined\".\"ID\" as PRDID, \"Participant\".\"ID\" as PARID\n" +
+                    "\tFROM \"Application\"\n" +
+                    "\tinner join \"Participant\" on \"Participant\".\"PARENTID\"=\"Application\".\"ID\"\n" +
+                    "\tinner join \"Terms\" ON \"Terms\".\"PARENTID\"=\"Application\".\"ID\"\n" +
+                    "\tinner join \"ProductParameters\" ON \"ProductParameters\".\"PARENTID\"=\"Terms\".\"ID\"\n" +
+                    "\tinner join \"Loan\" ON \"Loan\".\"PARENTID\"=\"ProductParameters\".\"ID\"\n" +
+                    "\tinner join \"Finances\" ON \"Finances\".\"PARENTID\"=\"Participant\".\"ID\"\n" +
+                    "\tinner join \"Income\" ON \"Income\".\"PARENTID\"=\"Finances\".\"ID\"\n" +
+                    "\tinner join \"Credit\" ON \"Credit\".\"PARENTID\"=\"Finances\".\"ID\"\n" +
+                    "\tinner join \"Employees\" ON \"Employees\".\"PARENTID\"=\"Participant\".\"ID\"\n" +
+                    "\tinner join \"Client\" ON \"Client\".\"PARENTID\"=\"Participant\".\"ID\"\n" +
+                    "\tinner join \"HistoryApplicationList\" ON \"HistoryApplicationList\".\"PARENTID\"=\"Participant\".\"ID\"\n" +
+                    "\tinner join \"ApplicationList\" ON \"ApplicationList\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
+                    "\tinner join \"ApplicationAggr\" ON \"ApplicationAggr\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
+                    "\tinner join \"Declined\" ON \"Declined\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
+                    "\tinner join \"ProductDeclined\" on \"ProductDeclined\".\"PARENTID\"=\"Declined\".\"ID\" where \"Application\".\"ID\"=?");
+            preparedStatement.setInt(1, id);
+            ResultSet result = preparedStatement.executeQuery();
 
-                    break;
-                case "ApplicationList":
-
-                    break;
-                case "Client":
-
-                    break;
-                case "Loan":
-
-                    break;
-                case "ProductParameters":
-
-                    break;
-                case "LegalEntity":
-
-                    break;
-                case "Income":
-
-                    break;
-                case "Credit":
-
-                    break;
-                case "Employees":
-
-                    break;
-                case "Declined":
-
-                    break;
-                case "ProductDeclined":
-
-                    break;
-
-            }
-//            PreparedStatement preparedStatement = connection.prepareStatement("select case\n" +
-//                    "when (select COUNT(*) from \"Client\" where \"Name\"=? and \"Passportnum\"=?) > 0 then 'true'\n" +
-//                    "else 'false'\n" +
-//                    "end result;");
-//            preparedStatement.setString(1, name);
-//            preparedStatement.setString(2, pass);
-            //ResultSet result = preparedStatement.executeQuery();
-//            while (result.next()) {
-//                login = new Login(result.getString("result"));
-//            }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException throwables) {
@@ -602,6 +608,81 @@ public class BankSystem {
             }
 
         } catch (ClassNotFoundException | SQLException e) {
+        }
+    }
+
+    public void generateAllProgressApplication() {
+        allApplications.clear();
+        try {
+            Class.forName("org.postgresql.Driver");
+            Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM \"Application\" WHERE \"Stage\"='PROGRESS'");
+            ResultSet result = preparedStatement.executeQuery();
+            while (result.next()) {
+                Application application = new Application(result.getString("ApplicationNum"),
+                        result.getString("Stage"),
+                        result.getString("Source"),
+                        result.getString("Region"),
+                        result.getString("Branch"),
+                        result.getDate("DateCreation"),
+                        result.getString("Priority")
+                );
+                allApplications.add(application);
+            }
+        }catch (ClassNotFoundException | SQLException e) {
+        }
+    }
+
+    public void generateAllHistoryApplication() {
+        allApplications.clear();
+        try {
+            Class.forName("org.postgresql.Driver");
+            Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM \"Application\" WHERE \"Stage\"='FAILED'");
+            ResultSet result = preparedStatement.executeQuery();
+            while (result.next()) {
+                Application application = new Application(result.getString("ApplicationNum"),
+                        result.getString("Stage"),
+                        result.getString("Source"),
+                        result.getString("Region"),
+                        result.getString("Branch"),
+                        result.getDate("DateCreation"),
+                        result.getString("Priority")
+                );
+                allApplications.add(application);
+            }
+        }catch (ClassNotFoundException | SQLException e) {
+        }
+    }
+
+    public void getAllClients(){
+        clientsList.clear();
+        try {
+            Class.forName("org.postgresql.Driver");
+            Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM \"Client\"");
+            ResultSet result = preparedStatement.executeQuery();
+            while (result.next()) {
+                Client client = new Client(result.getDate("BirthDate"),
+                        result.getString("BirthPlace"),
+                        result.getInt("Age"),
+                        result.getString("Gender"),
+                        result.getString("Citizenship"),
+                        result.getString("Education"),
+                        result.getString("Surname"),
+                        result.getString("Name"),
+                        result.getString("Patronymic"),
+                        result.getString("DocumentType"),
+                        result.getString("Passportnum"),
+                        result.getDate("Issuedate"),
+                        result.getString("IssuePlace"),
+                        result.getString("IssueAuthority"),
+                        result.getString("Departmentcode"),
+                        result.getString("SNILS")
+                );
+                clientsList.add(client);
+            }
+        }catch (ClassNotFoundException | SQLException e) {
         }
     }
 }
