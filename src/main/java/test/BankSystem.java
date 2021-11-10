@@ -400,25 +400,79 @@ public class BankSystem {
     }
 
     public void updateApplicationClient(int id, String str, String column, String table) throws SQLException, ClassNotFoundException {
-        try {
-            Class.forName("org.postgresql.Driver");
-            Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE \"" + table + "\" SET \"" + column + "\" =? WHERE \"ID\"=?;");
-            preparedStatement.setString(1, str);
-            preparedStatement.setInt(2, id);
-            //System.out.println(preparedStatement.toString());
-            preparedStatement.execute();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }  catch (PSQLException e)
-        {
-            Class.forName("org.postgresql.Driver");
-            Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
-            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE \"" + table + "\" SET \"" + column + "\" =" + str + " WHERE \"ID\"=?;");
-            preparedStatement.setInt(1, id);
-            //System.out.println(preparedStatement.toString());
-            preparedStatement.execute();
+        int idTable = 0;
+        Class.forName("org.postgresql.Driver");
+        Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
+        PreparedStatement preparedStatement = connection.prepareStatement("select \"Loan\".\"ID\" as LID, \"ProductParameters\".\"ID\" as PROID, \"Terms\".\"ID\" as TID,\n" +
+                "\t\"Application\".\"ID\" as AID, \"ApplicationAggr\".\"ID\" as APID, \"ApplicationList\".\"ID\" as APLID,\n" +
+                "\t\"Client\".\"ID\" as CID, \"Credit\".\"ID\" as CRID, \"Declined\".\"ID\" as DECID, \"Employees\".\"ID\" as EMID,\n" +
+                "\t\"Finances\".\"ID\" as FIID, \"HistoryApplicationList\".\"ID\" as HIID, \"Income\".\"ID\" as INID, \n" +
+                "\t\"ProductDeclined\".\"ID\" as PRDID, \"Participant\".\"ID\" as PARID\n" +
+                "\tFROM \"Application\"\n" +
+                "\tinner join \"Participant\" on \"Participant\".\"PARENTID\"=\"Application\".\"ID\"\n" +
+                "\tinner join \"Terms\" ON \"Terms\".\"PARENTID\"=\"Application\".\"ID\"\n" +
+                "\tinner join \"ProductParameters\" ON \"ProductParameters\".\"PARENTID\"=\"Terms\".\"ID\"\n" +
+                "\tinner join \"Loan\" ON \"Loan\".\"PARENTID\"=\"ProductParameters\".\"ID\"\n" +
+                "\tinner join \"Finances\" ON \"Finances\".\"PARENTID\"=\"Participant\".\"ID\"\n" +
+                "\tinner join \"Income\" ON \"Income\".\"PARENTID\"=\"Finances\".\"ID\"\n" +
+                "\tinner join \"Credit\" ON \"Credit\".\"PARENTID\"=\"Finances\".\"ID\"\n" +
+                "\tinner join \"Employees\" ON \"Employees\".\"PARENTID\"=\"Participant\".\"ID\"\n" +
+                "\tinner join \"Client\" ON \"Client\".\"PARENTID\"=\"Participant\".\"ID\"\n" +
+                "\tinner join \"HistoryApplicationList\" ON \"HistoryApplicationList\".\"PARENTID\"=\"Participant\".\"ID\"\n" +
+                "\tinner join \"ApplicationList\" ON \"ApplicationList\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
+                "\tinner join \"ApplicationAggr\" ON \"ApplicationAggr\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
+                "\tinner join \"Declined\" ON \"Declined\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
+                "\tinner join \"ProductDeclined\" on \"ProductDeclined\".\"PARENTID\"=\"Declined\".\"ID\" where \"Application\".\"ID\"=?;");
+        preparedStatement.setInt(1, id);
+        ResultSet result = preparedStatement.executeQuery();
+        while (result.next()) {
+            switch (table) {
+                case "Loan":
+                    idTable = result.getInt("LID");
+                    break;
+                case "ProductParameters":
+                    idTable = result.getInt("PROID");
+                    break;
+                case "Application":
+                    idTable = result.getInt("AID");
+                    break;
+                case "ApplicationAggr":
+                    idTable = result.getInt("APID");
+                    break;
+                case "ApplicationList":
+                    idTable = result.getInt("APLID");
+                    break;
+                case "Client":
+                    idTable = result.getInt("CID");
+                    break;
+                case "Credit":
+                    idTable = result.getInt("CRID");
+                    break;
+                case "Declined":
+                    idTable = result.getInt("DECID");
+                    break;
+                case "Employees":
+                    idTable = result.getInt("EMID");
+                    break;
+                case "Income":
+                    idTable = result.getInt("INID");
+                    break;
+                case "ProductDeclined":
+                    idTable = result.getInt("PRDID");
+                    break;
+                default:
+            }
         }
+            try {
+                preparedStatement = connection.prepareStatement("UPDATE \"" + table + "\" SET \"" + column + "\" =? WHERE \"ID\"=?;");
+                preparedStatement.setString(1, str);
+                preparedStatement.setInt(2, idTable);
+                preparedStatement.execute();
+            } catch (Exception e) {
+                preparedStatement = connection.prepareStatement("UPDATE \"" + table + "\" SET \"" + column + "\" =" + str + " WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, idTable);
+                preparedStatement.execute();
+            }
     }
 
     public void deleteApplicationClient(int id)
