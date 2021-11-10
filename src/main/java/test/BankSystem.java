@@ -415,7 +415,7 @@ public class BankSystem {
             Connection connection = DriverManager.getConnection(jdbcUrl, psgr_lg, psgr_pw);
             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE \"" + table + "\" SET \"" + column + "\" =" + str + " WHERE \"ID\"=?;");
             preparedStatement.setInt(1, id);
-            System.out.println(preparedStatement.toString());
+            //System.out.println(preparedStatement.toString());
             preparedStatement.execute();
         }
     }
@@ -444,10 +444,71 @@ public class BankSystem {
                     "\tinner join \"ApplicationList\" ON \"ApplicationList\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
                     "\tinner join \"ApplicationAggr\" ON \"ApplicationAggr\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
                     "\tinner join \"Declined\" ON \"Declined\".\"PARENTID\"=\"HistoryApplicationList\".\"ID\"\n" +
-                    "\tinner join \"ProductDeclined\" on \"ProductDeclined\".\"PARENTID\"=\"Declined\".\"ID\" where \"Application\".\"ID\"=?");
+                    "\tinner join \"ProductDeclined\" on \"ProductDeclined\".\"PARENTID\"=\"Declined\".\"ID\" where \"Application\".\"ID\"=?;");
             preparedStatement.setInt(1, id);
             ResultSet result = preparedStatement.executeQuery();
-
+            while (result.next()) {
+                preparedStatement = connection.prepareStatement("DELETE FROM \"Loan\"\n" +
+                        "WHERE \"Loan\".\"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("LID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"ProductParameters\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("PROID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"Terms\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("TID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"Income\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("INID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"Credit\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("CRID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"Finances\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("FIID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"Employees\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("EMID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"Client\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("CID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"ApplicationList\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("APLID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"ApplicationAggr\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("APID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"ProductDeclined\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("PRDID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"Declined\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("DECID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"HistoryApplicationList\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("HIID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"Participant\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("PARID"));
+                preparedStatement.execute();
+                preparedStatement = connection.prepareStatement("DELETE FROM \"Application\"\n" +
+                        "WHERE \"ID\"=?;");
+                preparedStatement.setInt(1, result.getInt("AID"));
+                preparedStatement.execute();
+            }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (SQLException throwables) {

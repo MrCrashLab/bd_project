@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import test.Models.Application;
 import test.Models.Client;
-import test.Requests.FullApplicationClient;
-import test.Requests.FullApplicationLegal;
-import test.Requests.Login;
-import test.Requests.UpdateModel;
+import test.Requests.*;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -70,5 +67,11 @@ public class API {
     public List<Client> getAllClients(){
         bankSystem.getAllClients();
         return bankSystem.getClientsList();
+    }
+
+    @RequestMapping(value = "/application/client/delete", method = RequestMethod.DELETE)
+    public void deleteApplication(@RequestBody DeleteModel deleteModel)
+    {
+        bankSystem.deleteApplicationClient(deleteModel.getId());
     }
 }
