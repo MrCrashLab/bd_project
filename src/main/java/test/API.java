@@ -74,4 +74,13 @@ public class API {
     {
         bankSystem.deleteApplicationClient(deleteModel.getId());
     }
+
+
+    @RequestMapping(value = "/application/client/all", method = RequestMethod.GET)
+    public List<FullApplicationClient> getAllApplicationsClient()
+    {
+        bankSystem.getAllFullApplicationClient();
+        return bankSystem.getFullApplicationClients();
+    }
+
 }
